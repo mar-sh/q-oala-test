@@ -1,29 +1,67 @@
 <template>
   <div id="home">
-    <message text="Vue-Webpack" />
+    <header>
+      <div>
+        QOALA-TEST
+      </div>
+
+      <div>
+        <base-button text="Color" />
+        <base-button text="City" />
+      </div>
+    </header>
+
+    <div id="container">
+      <user-card />
+    </div>
   </div>
 </template>
 
 <script>
-import Message from '@/components/Message';
+import BaseButton from '@/components/BaseButton';
+import Header from '@/components/Header';
+import UserCard from '@/components/UserCard';
+
+import { getRandomUsers } from '@/services/randomUser';
+import { getAttributesShown } from '@/helpers';
 
 export default {
   name: 'Home',
   components: {
-    Message,
+    BaseButton,
+    Header,
+    UserCard,
   },
 
-  created() {},
+  created() {
+    const onCreatedGetRandomUsers = async () => {
+      try {
+        const response = await getRandomUsers();
+        const { results } = response;
+
+        this.randomUsers = results.map(el =>
+          getAttributesShown(el, ['name', 'location', 'picture', 'dob']),
+        );
+      } catch (e) {}
+    };
+    onCreatedGetRandomUsers();
+  },
 
   mounted() {},
 
   destroyed() {},
 
   data() {
-    return {};
+    return {
+      randomUsers: [],
+    };
   },
 
-  methods: {},
+  methods: {
+    logInfo() {
+      console.log('click');
+    },
+  },
 
   computed: {},
 
@@ -33,11 +71,21 @@ export default {
 
 <style scoped>
 #home {
-  min-height: 100vh;
-  width: 100%;
+  min-width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+}
+
+#container {
+  min-width: 100%;
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  padding: 10px;
 }
 </style>

@@ -30,6 +30,7 @@ module.exports = env => {
       historyApiFallback: true,
     },
     resolve: {
+      modules: ['components', 'node_modules'],
       extensions: ['.js', '.vue'],
       alias: {
         vue$: isDev ? 'vue/dist/vue.runtime.js' : 'vue/dist/vue.runtime.min.js',
