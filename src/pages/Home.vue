@@ -24,8 +24,6 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-
 import BaseButton from '@/components/BaseButton';
 import UserCard from '@/components/UserCard';
 
@@ -38,6 +36,7 @@ import {
 
 export default {
   name: 'Home',
+
   components: {
     BaseButton,
     UserCard,
@@ -48,6 +47,8 @@ export default {
   },
 
   mounted() {
+    // Set up scroll event listeners
+
     const scrollContainer = document.querySelector('#scroll-container');
     this.scrollHorizontalEventListener = scrollContainer.addEventListener(
       'scroll',
@@ -98,9 +99,11 @@ export default {
   methods: {
     async onCreatedGetRandomUsers() {
       try {
+        // Check local storage first for the data;
         const usersData = getLocalStorageItem('_usersData');
 
         if (!usersData) {
+          // Fetch from the api if data from local storage is not defined
           const response = await getRandomUsers();
           if (response.error) throw new Error(response.error);
 
@@ -116,6 +119,7 @@ export default {
             ]),
           );
 
+          //Get first 10 of the data to display. set it to instance state
           this.users = results.slice(0, 10);
 
           writeToLocalStorage('_usersData', results);
@@ -130,18 +134,16 @@ export default {
     },
 
     sortByColor() {
-      const redUsers = this.users.filter(
-        user => parseInt(user.dob.age, 10) <= 21,
-      );
-      const greenUsers = this.users.filter(
+      const redBg = this.users.filter(user => parseInt(user.dob.age, 10) <= 21);
+      const greenBg = this.users.filter(
         user =>
           parseInt(user.dob.age, 10) > 21 && parseInt(user.dob.age, 10) < 56,
       );
-      const blueUsers = this.users.filter(
+      const blueBg = this.users.filter(
         user => parseInt(user.dob.age, 10) >= 56,
       );
 
-      const results = [...greenUsers, ...blueUsers, ...redUsers];
+      const results = [...greenBg, ...blueBg, ...redBg];
 
       this.users = results;
     },
@@ -163,7 +165,9 @@ export default {
 
     onScrollEndGetMore() {
       this.isLoading = true;
+      // Timeout to simulate api call event
       setTimeout(() => {
+        // Check localStorage for data, fetch if data is not defined
         let usersData = getLocalStorageItem('_usersData');
 
         if (!usersData) {
@@ -174,14 +178,18 @@ export default {
         const maxLength = usersData.length;
 
         if (this.pageIndex * 10 < maxLength && this.isLoading) {
+          // pageIndex to identify how far the user has scrolled
+          // While it's still not the end of the data, increment it everytime scroll ends
+          // Update the index in localStorage as well
           this.pageIndex += 1;
           localStorage.setItem('_index', String(this.pageIndex));
 
+          // Get data based on current users data and pageIndex
           const dataToAppend = usersData.slice(
             this.users.length,
             this.pageIndex * 10,
           );
-
+          // Append it to current users data
           this.users = [...this.users, ...dataToAppend];
           this.isLoading = false;
         }

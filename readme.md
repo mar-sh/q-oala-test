@@ -1,4 +1,4 @@
-# Vue Webpack Template
+# Qoala Test
 
 ## Live
 
@@ -29,6 +29,7 @@ npm run start
 ```
 npm run build
 ```
+
 - Find the minified code in ./build folder.
 
 ### Project Structure:
@@ -47,4 +48,4 @@ npm run build
 
 ## Things to note
 
-- Notes here
+- I don't really know what i'm doing with webpack so things may or may not get weird when running the project in development.
