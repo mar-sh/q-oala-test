@@ -4,17 +4,20 @@
       <div class="logo">
         QOALA-TEST
       </div>
-
       <div class="buttons">
         <base-button text="Color" @click="sortByColor" />
         <base-button text="Cities" @click="sortByCity" />
       </div>
     </header>
     <div id="home">
-      <div id="scroll-container">
+      <p class="text error" v-if="isError">{{ errorMessage }}</p>
+      <div v-if="!isError" id="scroll-container">
         <div class="card-container" v-for="user in users" :key="user.email">
           <user-card :user="user" />
         </div>
+        <p class="text loading" v-if="isLoading">
+          Fetching More
+        </p>
       </div>
     </div>
   </div>
@@ -46,40 +49,49 @@ export default {
 
   mounted() {
     const scrollContainer = document.querySelector('#scroll-container');
-    this.scrollListener = scrollContainer.addEventListener('scroll', evt => {
-      const maxScrollLeft = evt.target.scrollWidth - evt.target.clientWidth;
+    this.scrollHorizontalEventListener = scrollContainer.addEventListener(
+      'scroll',
+      evt => {
+        const maxScrollLeft = evt.target.scrollWidth - evt.target.clientWidth;
+        const maxScrollTop = evt.target.scrollHeight - evt.target.clientHeight;
 
-      if (evt.target.scrollLeft === maxScrollLeft) {
-        const usersData = getLocalStorageItem('_usersData');
-        const maxLength = usersData.length;
-
-        if (this.pageIndex * 10 < maxLength && !this.isLoading) {
-          this.pageIndex += 1;
-          localStorage.setItem('_index', String(this.pageIndex));
-
-          const dataToAppend = usersData.slice(
-            this.users.length,
-            this.pageIndex * 10,
-          );
-
-          this.users = [...this.users, ...dataToAppend];
+        if (evt.target.scrollLeft === maxScrollLeft) {
+          this.onScrollEndGetMore();
         }
-      }
-    });
+      },
+    );
+
+    this.scrollVerticalEventListener = window.addEventListener(
+      'scroll',
+      evt => {
+        const maxScrollTop =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight;
+
+        if (document.documentElement.scrollTop === maxScrollTop) {
+          this.onScrollEndGetMore();
+        }
+      },
+    );
   },
 
   destroyed() {
     const scrollContainer = document.querySelector('#scroll-container');
-    scrollContainer.removeEventListener('scroll', this.scrollListener);
+    scrollContainer.removeEventListener(
+      'scroll',
+      this.scrollHorizontalEventListener,
+    );
+    window.removeEventListener('scroll', this.scrollVerticalEventListener);
   },
 
   data() {
     return {
-      users: [],
-      isLoading: false,
       errorMessage: '',
+      isLoading: false,
       pageIndex: parseInt(localStorage.getItem('_index'), 10) || 1,
-      scrollListener: null,
+      scrollHorizontalEventListener: () => undefined,
+      scrollVerticalEventListener: () => undefined,
+      users: [],
     };
   },
 
@@ -140,13 +152,40 @@ export default {
         const { city: cityB } = userB.location;
 
         if (cityA < cityB) {
-          return 1;
-        } else if (cityA > cityB) {
           return -1;
+        } else if (cityA > cityB) {
+          return 1;
         } else return 0;
       });
 
       this.users = results;
+    },
+
+    onScrollEndGetMore() {
+      this.isLoading = true;
+      setTimeout(() => {
+        let usersData = getLocalStorageItem('_usersData');
+
+        if (!usersData) {
+          this.onCreatedGetRandomUsers();
+          usersData = getLocalStorageItem('_usersData');
+        }
+
+        const maxLength = usersData.length;
+
+        if (this.pageIndex * 10 < maxLength && this.isLoading) {
+          this.pageIndex += 1;
+          localStorage.setItem('_index', String(this.pageIndex));
+
+          const dataToAppend = usersData.slice(
+            this.users.length,
+            this.pageIndex * 10,
+          );
+
+          this.users = [...this.users, ...dataToAppend];
+          this.isLoading = false;
+        }
+      }, 1000);
     },
   },
 
@@ -155,8 +194,6 @@ export default {
       return Boolean(this.errorMessage);
     },
   },
-
-  watch: {},
 };
 </script>
 
@@ -218,6 +255,21 @@ header .buttons > button:first-child {
   padding: 15px;
 }
 
+.text {
+  align-self: center;
+}
+
+.error {
+  color: red;
+  font-size: 24px;
+}
+
+.loading {
+  color: inherit;
+  font-size: 18px;
+  font-weight: bold;
+}
+
 @media (min-width: 780px) {
   #home {
     padding: 10px 50px;
@@ -228,6 +280,11 @@ header .buttons > button:first-child {
     flex-direction: row;
     overflow-x: auto;
     padding: 5px;
+  }
+
+  .loading {
+    color: inherit;
+    font-size: 24px;
   }
 }
 </style>

@@ -11,7 +11,7 @@
 
     <div class="card-contact">{{ user.email }}</div>
 
-    <div class="card-masonry-effect" :style="`height: ${randomSpacing}`"></div>
+    <div class="card-masonry-effect" :style="`height: ${randomHeight}`"></div>
   </div>
 </template>
 
@@ -23,8 +23,6 @@ export default {
     user: Object,
   },
 
-  created() {},
-
   computed: {
     colorByAge() {
       const { age } = this.user.dob;
@@ -33,30 +31,36 @@ export default {
       if (parseInt(age, 10) > 21 && parseInt(age, 10) < 56) return 'green';
       if (parseInt(age, 10) >= 56) return 'blue';
     },
+
     fullName() {
       const { title, first, last } = this.user.name;
 
       return `${title}. ${first} ${last}`;
     },
+
     age() {
       const { age } = this.user.dob;
 
       return age;
     },
+
     location() {
       const { city, state, postcode } = this.user.location;
 
       return `${city}, ${state}, ${postcode}`;
     },
+
     avatarImageURL() {
       const { large } = this.user.picture;
 
       return large;
     },
-    randomSpacing() {
-      const spacing = String(Math.floor(Math.random(0) * 200));
 
-      return `${spacing}px`;
+    randomHeight() {
+      const heights = [0, 150, 300];
+      const randomRoll = Math.floor(Math.random() * 3);
+
+      return `${heights[randomRoll]}px`;
     },
   },
 };
