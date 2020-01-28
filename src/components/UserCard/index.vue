@@ -16,7 +16,7 @@
       <i class="fa fa-envelope-o" aria-hidden="true"></i> {{ user.email }}
     </div>
 
-    <div class="card-masonry-effect" :style="`height: ${randomHeight}`"></div>
+    <div class="card-masonry-effect" :style="`height: ${addHeight}`"></div>
   </div>
 </template>
 
@@ -26,6 +26,7 @@ export default {
 
   props: {
     user: Object,
+    index: Number,
   },
 
   computed: {
@@ -61,11 +62,11 @@ export default {
       return large;
     },
 
-    randomHeight() {
+    addHeight() {
       const heights = [0, 150, 300];
-      const randomRoll = Math.floor(Math.random() * 3);
+      const index = (this.index + 3) % 3;
 
-      return `${heights[randomRoll]}px`;
+      return `${heights[index]}px`;
     },
   },
 };

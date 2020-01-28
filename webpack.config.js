@@ -56,6 +56,8 @@ module.exports = env => {
         },
       ],
     },
-    plugins: [htmlWebpack, vueLoader, isDev && hotModuleReplacement],
+    plugins: isDev
+      ? [htmlWebpack, vueLoader, hotModuleReplacement]
+      : [htmlWebpack, vueLoader],
   };
 };

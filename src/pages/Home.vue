@@ -12,8 +12,12 @@
     <div id="home">
       <p class="text error" v-if="isError">{{ errorMessage }}</p>
       <div v-if="!isError" id="scroll-container">
-        <div class="card-container" v-for="user in users" :key="user.email">
-          <user-card :user="user" />
+        <div
+          class="card-container"
+          v-for="(user, index) in users"
+          :key="user.email"
+        >
+          <user-card :user="user" :index="index" />
         </div>
         <p class="text loading" v-if="isLoading">
           Fetching
