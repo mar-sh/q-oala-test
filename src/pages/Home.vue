@@ -74,7 +74,6 @@ export default {
           document.documentElement.clientHeight;
 
         if (document.documentElement.scrollTop === maxScrollTop) {
-          console.log('vertical scroll event ');
           this.onScrollEndGetMore();
         }
       },
