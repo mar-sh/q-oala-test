@@ -70,6 +70,7 @@ export default {
           document.documentElement.clientHeight;
 
         if (document.documentElement.scrollTop === maxScrollTop) {
+          console.log('vertical scroll event ');
           this.onScrollEndGetMore();
         }
       },
@@ -165,20 +166,20 @@ export default {
     },
 
     onScrollEndGetMore() {
-      this.isLoading = true;
-      // Timeout to simulate api call event
-      setTimeout(() => {
-        // Check localStorage for data, fetch if data is not defined
-        let usersData = getLocalStorageItem('_usersData');
+      let usersData = getLocalStorageItem('_usersData');
 
-        if (!usersData) {
-          this.onCreatedGetRandomUsers();
-          usersData = getLocalStorageItem('_usersData');
-        }
+      if (!usersData) {
+        this.onCreatedGetRandomUsers();
+        usersData = getLocalStorageItem('_usersData');
+      }
+      const maxLength = usersData.length;
+      if (this.pageIndex * 10 < maxLength && !this.isLoading) {
+        this.isLoading = true;
+        // Timeout to simulate api call event
+        setTimeout(() => {
+          // Check localStorage for data, fetch if data is not defined
 
-        const maxLength = usersData.length;
-
-        if (this.pageIndex * 10 < maxLength && this.isLoading) {
+          // if (this.pageIndex * 10 < maxLength && this.isLoading) {
           // pageIndex to identify how far the user has scrolled
           // While it's still not the end of the data, increment it everytime scroll ends
           // Update the index in localStorage as well
@@ -193,8 +194,8 @@ export default {
           // Append it to current users data
           this.users = [...this.users, ...dataToAppend];
           this.isLoading = false;
-        }
-      }, 1000);
+        }, 1000);
+      }
     },
   },
 
