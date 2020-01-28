@@ -39,11 +39,13 @@ npm run build
   - **build/** folder for minified source code (npm run build).
   - **config/** configuration directory.
   - **components/** reusable component directory.
+  - **helpers/** helpers functions directory.
   - **pages/** list of pages.
   - **services/** third party services.
   - **router.js** main app router.
   - **App.vue** main app entry.
-  - **index.js** main app vue instance and global imports.
+  - **index.js** main app vue instance and global imports/plugins.
+  - **index.css** main app global stylesheet.
 - **webpack.config.js/** webpack configuration file.
 
 ## Things to note

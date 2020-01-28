@@ -4,12 +4,17 @@
       <img :src="avatarImageURL" alt="picsum" />
     </div>
     <div class="card-bio">
-      {{ `${fullName},` }} <span>{{ `${age} years old` }}</span>
+      <i class="fa fa-user" aria-hidden="true"></i> {{ `${fullName},` }}
+      <span>{{ `${age} years old` }}</span>
     </div>
 
-    <div class="card-location">{{ location }}</div>
+    <div class="card-location">
+      <i class="fa fa-map-marker" aria-hidden="true"></i> {{ location }}
+    </div>
 
-    <div class="card-contact">{{ user.email }}</div>
+    <div class="card-contact">
+      <i class="fa fa-envelope-o" aria-hidden="true"></i> {{ user.email }}
+    </div>
 
     <div class="card-masonry-effect" :style="`height: ${randomHeight}`"></div>
   </div>
@@ -160,7 +165,7 @@ export default {
     object-fit: contain;
     border: 0.5px solid white;
     border-radius: 50%;
-    width: 200px;
+    width: 150px;
   }
   .card-bio {
     font-size: 18px;

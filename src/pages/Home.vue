@@ -16,7 +16,7 @@
           <user-card :user="user" />
         </div>
         <p class="text loading" v-if="isLoading">
-          Fetching More
+          Fetching
         </p>
       </div>
     </div>
@@ -104,6 +104,7 @@ export default {
 
         if (!usersData) {
           // Fetch from the api if data from local storage is not defined
+          this.isLoading = true;
           const response = await getRandomUsers();
           if (response.error) throw new Error(response.error);
 
@@ -120,11 +121,11 @@ export default {
           );
 
           //Get first 10 of the data to display. set it to instance state
+          this.isLoading = false;
           this.users = results.slice(0, 10);
 
           writeToLocalStorage('_usersData', results);
-        }
-        this.users = usersData.slice(0, this.pageIndex * 10);
+        } else this.users = usersData.slice(0, this.pageIndex * 10);
       } catch (error) {
         if (error.message) {
           this.errorMessage = error.message;
