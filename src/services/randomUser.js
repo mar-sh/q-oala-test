@@ -14,7 +14,7 @@ export const getRandomUsers = async () => {
     });
 
     return response;
-  } catch (e) {
-    return e;
+  } catch (error) {
+    return error;
   }
 };
