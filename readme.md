@@ -2,7 +2,7 @@
 
 ## Live
 
-[URL here](https://qoala-test.demarsh.dev/)
+[Live Demo](https://qoala-test.demarsh.dev/)
 
 ## Requirements
 
