@@ -152,6 +152,7 @@ export default {
       const results = [...greenBg, ...blueBg, ...redBg];
 
       this.users = results;
+      this.resetScrollPosition();
     },
 
     sortByCity() {
@@ -167,6 +168,7 @@ export default {
       });
 
       this.users = results;
+      this.resetScrollPosition();
     },
 
     onScrollEndGetMore() {
@@ -201,6 +203,13 @@ export default {
         }, 1000);
       }
     },
+
+    resetScrollPosition() {
+      const scrollContainer = document.querySelector('#scroll-container');
+
+      scrollContainer.scrollLeft = 0;
+      document.documentElement.scrollTop = 0;
+    },
   },
 
   computed: {
@@ -217,12 +226,19 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  margin-top: 80px;
 }
 
 header {
   display: flex;
   justify-content: space-between;
   padding: 5px 10px;
+  background: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-bottom: 5px;
 }
 
 header .logo {
