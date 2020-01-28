@@ -7,11 +7,11 @@
 
       <div class="buttons">
         <base-button text="Color" @click="sortByColor" />
-        <base-button text="City" @click="sortByCity" />
+        <base-button text="Cities" @click="sortByCity" />
       </div>
     </header>
     <div id="home">
-      <div class="scroll-container">
+      <div id="scroll-container">
         <div class="card-container" v-for="user in users" :key="user.email">
           <user-card :user="user" />
         </div>
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+
 import BaseButton from '@/components/BaseButton';
 import UserCard from '@/components/UserCard';
 
@@ -42,33 +44,57 @@ export default {
     this.onCreatedGetRandomUsers();
   },
 
-  mounted() {},
+  mounted() {
+    const scrollContainer = document.querySelector('#scroll-container');
+    this.scrollListener = scrollContainer.addEventListener('scroll', evt => {
+      const maxScrollLeft = evt.target.scrollWidth - evt.target.clientWidth;
 
-  destroyed() {},
+      if (evt.target.scrollLeft === maxScrollLeft) {
+        const usersData = getLocalStorageItem('_usersData');
+        const maxLength = usersData.length;
+
+        if (this.pageIndex * 10 < maxLength && !this.isLoading) {
+          this.pageIndex += 1;
+          localStorage.setItem('_index', String(this.pageIndex));
+
+          const dataToAppend = usersData.slice(
+            this.users.length,
+            this.pageIndex * 10,
+          );
+
+          this.users = [...this.users, ...dataToAppend];
+        }
+      }
+    });
+  },
+
+  destroyed() {
+    const scrollContainer = document.querySelector('#scroll-container');
+    scrollContainer.removeEventListener('scroll', this.scrollListener);
+  },
 
   data() {
     return {
       users: [],
+      isLoading: false,
+      errorMessage: '',
+      pageIndex: parseInt(localStorage.getItem('_index'), 10) || 1,
+      scrollListener: null,
     };
   },
 
   methods: {
-    logInfo() {
-      console.log('click');
-    },
-
     async onCreatedGetRandomUsers() {
       try {
-        const data = getLocalStorageItem('_usersData');
+        const usersData = getLocalStorageItem('_usersData');
 
-        this.users = data;
-        if (!data) {
+        if (!usersData) {
           const response = await getRandomUsers();
           if (response.error) throw new Error(response.error);
 
-          const { results } = response;
+          let { results } = response;
 
-          this.users = results.map(el =>
+          results = results.map(el =>
             getAttributesShown(el, [
               'name',
               'location',
@@ -78,10 +104,16 @@ export default {
             ]),
           );
 
-          writeToLocalStorage('_usersData', this.users);
+          this.users = results.slice(0, 10);
+
+          writeToLocalStorage('_usersData', results);
         }
+        this.users = usersData.slice(0, this.pageIndex * 10);
       } catch (error) {
-        console.error(error.message);
+        if (error.message) {
+          this.errorMessage = error.message;
+        } else
+          this.errorMessage = `Something's wrong. Reload the page or try again later.`;
       }
     },
 
@@ -100,8 +132,6 @@ export default {
       const results = [...greenUsers, ...blueUsers, ...redUsers];
 
       this.users = results;
-
-      writeToLocalStorage('_usersData', this.users);
     },
 
     sortByCity() {
@@ -117,12 +147,14 @@ export default {
       });
 
       this.users = results;
-
-      writeToLocalStorage('_usersData', this.users);
     },
   },
 
-  computed: {},
+  computed: {
+    isError() {
+      return Boolean(this.errorMessage);
+    },
+  },
 
   watch: {},
 };
@@ -145,6 +177,7 @@ header {
 header .logo {
   font-size: 36px;
   font-weight: bold;
+  cursor: default;
 }
 
 header .buttons {
@@ -162,6 +195,10 @@ header .buttons > button {
   cursor: pointer;
 }
 
+header .buttons > button:hover {
+  background-color: #ffaa36;
+}
+
 header .buttons > button:focus {
   outline: none;
 }
@@ -170,7 +207,7 @@ header .buttons > button:first-child {
   margin-right: 10px;
 }
 
-.scroll-container {
+#scroll-container {
   min-width: 100%;
   display: flex;
   flex-direction: column;
@@ -181,12 +218,12 @@ header .buttons > button:first-child {
   padding: 15px;
 }
 
-@media (min-width: 850px) {
+@media (min-width: 780px) {
   #home {
     padding: 10px 50px;
   }
 
-  .scroll-container {
+  #scroll-container {
     display: flex;
     flex-direction: row;
     overflow-x: auto;
