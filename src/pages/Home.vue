@@ -1,19 +1,20 @@
 <template>
-  <div id="home">
+  <div>
     <header>
-      <div>
+      <div class="logo">
         QOALA-TEST
       </div>
 
-      <div>
+      <div class="buttons">
         <base-button text="Color" @click="sortByColor" />
         <base-button text="City" @click="sortByCity" />
       </div>
     </header>
-
-    <div id="container">
-      <div class="card-container" v-for="user in users" :key="user.email">
-        <user-card :user="user" />
+    <div id="home">
+      <div class="scroll-container">
+        <div class="card-container" v-for="user in users" :key="user.email">
+          <user-card :user="user" />
+        </div>
       </div>
     </div>
   </div>
@@ -21,7 +22,6 @@
 
 <script>
 import BaseButton from '@/components/BaseButton';
-import Header from '@/components/Header';
 import UserCard from '@/components/UserCard';
 
 import { getRandomUsers } from '@/services/randomUser';
@@ -35,7 +35,6 @@ export default {
   name: 'Home',
   components: {
     BaseButton,
-    Header,
     UserCard,
   },
 
@@ -131,25 +130,67 @@ export default {
 
 <style scoped>
 #home {
-  min-width: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  padding: 10px;
 }
 
 header {
   display: flex;
   justify-content: space-between;
+  padding: 5px 10px;
 }
 
-#container {
+header .logo {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+header .buttons {
+  align-self: center;
+  display: flex;
+}
+
+header .buttons > button {
+  background-color: #ff803a;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 20px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+header .buttons > button:focus {
+  outline: none;
+}
+
+header .buttons > button:first-child {
+  margin-right: 10px;
+}
+
+.scroll-container {
   min-width: 100%;
   display: flex;
-  flex-direction: row;
-  overflow-x: auto;
-  padding: 10px;
+  flex-direction: column;
+  padding: 5px;
 }
 
 .card-container {
   padding: 15px;
+}
+
+@media (min-width: 850px) {
+  #home {
+    padding: 10px 50px;
+  }
+
+  .scroll-container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 5px;
+  }
 }
 </style>
