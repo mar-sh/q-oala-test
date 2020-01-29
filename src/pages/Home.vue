@@ -185,9 +185,6 @@ export default {
         this.isLoading = true;
         // Timeout to simulate api call event
         setTimeout(() => {
-          // Check localStorage for data, fetch if data is not defined
-
-          // if (this.pageIndex * 10 < maxLength && this.isLoading) {
           // pageIndex to identify how far the user has scrolled
           // While it's still not the end of the data, increment it everytime scroll ends
           // Update the index in localStorage as well
