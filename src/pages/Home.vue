@@ -71,7 +71,6 @@ export default {
       'scroll',
       evt => {
         const maxScrollLeft = evt.target.scrollWidth - evt.target.clientWidth;
-        const maxScrollTop = evt.target.scrollHeight - evt.target.clientHeight;
 
         if (evt.target.scrollLeft === maxScrollLeft && this.pageIndex < 10) {
           this.onScrollEndGetMore();
@@ -79,6 +78,7 @@ export default {
       },
     );
 
+    // this.scrollVerticalEventListener = window.addEventListener(
     this.scrollVerticalEventListener = window.addEventListener(
       'scroll',
       evt => {
@@ -86,7 +86,7 @@ export default {
           document.documentElement.scrollHeight -
           document.documentElement.clientHeight;
 
-        if (document.documentElement.scrollTop === maxScrollTop) {
+        if (document.documentElement.scrollTop >= maxScrollTop * 0.9) {
           this.onScrollEndGetMore();
         }
       },
