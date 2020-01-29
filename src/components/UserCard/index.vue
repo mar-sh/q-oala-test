@@ -22,13 +22,19 @@
 
 <script>
 export default {
-  name: 'UserCard',
+  /**
+   * @name UserCard propTypes.
+   * @type {propTypes}
+   * @param {Object} user User object with contents needed
+   * @property {Number} index Index in iteration, depends on the number it'll assign different height to give card the masonry-effect
+   * @description Card with desktop and mobile layout using CSS grid
+   */
 
+  name: 'UserCard',
   props: {
     user: Object,
     index: Number,
   },
-
   computed: {
     colorByAge() {
       const { age } = this.user.dob;

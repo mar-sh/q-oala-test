@@ -13,6 +13,7 @@
 import BaseButton from '@/components/BaseButton';
 export default {
   name: 'NotFound',
+
   components: {
     BaseButton,
   },

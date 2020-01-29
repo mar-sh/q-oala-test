@@ -11,6 +11,7 @@
     </header>
     <div id="home">
       <p class="text error" v-if="isError">{{ errorMessage }}</p>
+
       <div v-if="!isError" id="scroll-container">
         <div
           class="card-container"
@@ -19,9 +20,9 @@
         >
           <user-card :user="user" :index="index" />
         </div>
-        <p class="text loading" v-if="isLoading">
-          Fetching
-        </p>
+        <div class="text" v-if="isLoading && !isError">
+          <loader text="Fetching" />
+        </div>
       </div>
     </div>
   </div>
@@ -29,6 +30,7 @@
 
 <script>
 import BaseButton from '@/components/BaseButton';
+import Loader from '@/components/Loader';
 import UserCard from '@/components/UserCard';
 
 import { getRandomUsers } from '@/services/randomUser';
@@ -43,7 +45,19 @@ export default {
 
   components: {
     BaseButton,
+    Loader,
     UserCard,
+  },
+
+  data() {
+    return {
+      errorMessage: '',
+      isLoading: false,
+      pageIndex: parseInt(localStorage.getItem('_index'), 10) || 1,
+      scrollHorizontalEventListener: () => undefined,
+      scrollVerticalEventListener: () => undefined,
+      users: [],
+    };
   },
 
   created() {
@@ -52,7 +66,6 @@ export default {
 
   mounted() {
     // Set up scroll event listeners
-
     const scrollContainer = document.querySelector('#scroll-container');
     this.scrollHorizontalEventListener = scrollContainer.addEventListener(
       'scroll',
@@ -60,7 +73,7 @@ export default {
         const maxScrollLeft = evt.target.scrollWidth - evt.target.clientWidth;
         const maxScrollTop = evt.target.scrollHeight - evt.target.clientHeight;
 
-        if (evt.target.scrollLeft === maxScrollLeft) {
+        if (evt.target.scrollLeft === maxScrollLeft && this.pageIndex < 10) {
           this.onScrollEndGetMore();
         }
       },
@@ -87,17 +100,6 @@ export default {
       this.scrollHorizontalEventListener,
     );
     window.removeEventListener('scroll', this.scrollVerticalEventListener);
-  },
-
-  data() {
-    return {
-      errorMessage: '',
-      isLoading: false,
-      pageIndex: parseInt(localStorage.getItem('_index'), 10) || 1,
-      scrollHorizontalEventListener: () => undefined,
-      scrollVerticalEventListener: () => undefined,
-      users: [],
-    };
   },
 
   methods: {
@@ -178,6 +180,7 @@ export default {
         usersData = getLocalStorageItem('_usersData');
       }
       const maxLength = usersData.length;
+
       if (this.pageIndex * 10 < maxLength && !this.isLoading) {
         this.isLoading = true;
         // Timeout to simulate api call event
@@ -188,6 +191,7 @@ export default {
           // pageIndex to identify how far the user has scrolled
           // While it's still not the end of the data, increment it everytime scroll ends
           // Update the index in localStorage as well
+
           this.pageIndex += 1;
           localStorage.setItem('_index', String(this.pageIndex));
 
@@ -200,7 +204,7 @@ export default {
           this.users = [...this.users, ...dataToAppend];
           this.isLoading = false;
         }, 1000);
-      }
+      } else return;
     },
 
     resetScrollPosition() {
